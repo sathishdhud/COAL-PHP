@@ -8,7 +8,13 @@ $price = $_POST['price'] ?? 0;
 
 // Validate data
 if (empty($product_name) || !is_numeric($quantity) || !is_numeric($price)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid data provided']);
+    echo json_encode(['success' => false, 'message' => 'Invalid data provided. Please check all fields.']);
+    exit;
+}
+
+// Additional validation
+if ($quantity < 0 || $price < 0) {
+    echo json_encode(['success' => false, 'message' => 'Quantity and price must be positive numbers.']);
     exit;
 }
 
@@ -17,7 +23,7 @@ $total_value = $quantity * $price;
 
 // Create product entry
 $product = [
-    'product_name' => $product_name,
+    'product_name' => trim($product_name),
     'quantity' => (int)$quantity,
     'price' => (float)$price,
     'datetime' => date('Y-m-d H:i:s'),
@@ -36,8 +42,8 @@ $data[] = $product;
 
 // Save data back to file
 if (file_put_contents('data.json', json_encode($data, JSON_PRETTY_PRINT))) {
-    echo json_encode(['success' => true, 'message' => 'Product added successfully']);
+    echo json_encode(['success' => true, 'message' => 'Product added successfully to inventory.']);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to save product']);
+    echo json_encode(['success' => false, 'message' => 'Failed to save product. Please check file permissions.']);
 }
 ?>
